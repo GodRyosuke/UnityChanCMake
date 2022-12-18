@@ -1,11 +1,13 @@
 #include "Game.hpp"
 #include <iostream>
-#include "SDL.h"
+#include "SDL2/SDL.h"
 #include <assimp/Importer.hpp>      // C++ importer interface
 #include <assimp/scene.h>       // Output data structure
 #include <assimp/postprocess.h> // Post processing flags
 #include <string> 
 #include "Definitions.hpp"
+#include "glm/glm.hpp"
+#include "glad/glad.h"
 
 #define ASSIMP_LOAD_FLAGS (aiProcess_Triangulate | aiProcess_GenSmoothNormals |  aiProcess_JoinIdenticalVertices )
 
@@ -19,8 +21,11 @@ Game::Game()
     std::cout << "asset path: " << ASSET_PATH << std::endl;
     const aiScene* m_pScene;
     Assimp::Importer m_Importer;
-    std::string filePath = "";
+    std::string filePath = ASSET_PATH;
+    // filePath += "/UnityChan/UnityChan_fbx7binary.fbx";
+    filePath += "./assets/Bush_1/Bush_1.fbx";
     m_pScene = m_Importer.ReadFile(filePath.c_str(), ASSIMP_LOAD_FLAGS);
-
-    std::cout << "hello sdl\n" << std::endl;
+    gladLoadGL();
+    glm::mat4 mat;
+    std::cout << "hello sdl and assimp\n" << std::endl;
 }

@@ -1,1 +1,1 @@
-#define ASSET_PATH "C:/Users/kusumoto/source/repos/UnityChanCMake/assets"
+#define ASSET_PATH "C:/Users/ienvs/source/repos/UnityChanCMake/assets"
