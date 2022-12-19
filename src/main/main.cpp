@@ -1,15 +1,15 @@
 #include <iostream>
-#include "SDL2/SDL.h"
 #include "Game.hpp"
 
 int main(int argc, char** argv)
 {
-    Game game;
-    
-    std::cout << "hello unitychan\n";
-    for (int i = 0; i < 10; i++) {
-        std::cout << "num: " << i << std::endl;
-    }
+	Game game;
+	if (!game.Initialize()) {
+		printf("error: Failed to Initialize Game\n");
+		return -1;
+	}
 
-    return 0;
+	game.RunLoop();
+	game.Shutdown();
+	return 0;
 }

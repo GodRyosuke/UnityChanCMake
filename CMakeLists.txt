@@ -14,5 +14,6 @@ target_link_libraries(${CMAKE_PROJECT_NAME} Game)
 
 # copy assets to build directory
 install (DIRECTORY ${PROJECT_SOURCE_DIR}/assets DESTINATION ${CMAKE_BINARY_DIR})
+install (DIRECTORY ${PROJECT_SOURCE_DIR}/shaders DESTINATION ${CMAKE_BINARY_DIR})
 
 message ("binary path: ${CMAKE_BINARY_DIR}")
