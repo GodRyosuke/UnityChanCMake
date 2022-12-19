@@ -2,3 +2,6 @@
 /build
 /.vs
 /vcpkg
+/release
+/win_build
+/mingw_build

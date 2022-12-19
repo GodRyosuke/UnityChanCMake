@@ -15,7 +15,9 @@
 #include "glad/glad.h"
 #include "Shader.hpp"
 #include "Mesh.hpp"
+#include "Animation.hpp"
 #include "Component/MeshComponent.hpp"
+#include "Component/SkinMeshComponent.hpp"
 
 #define ASSIMP_LOAD_FLAGS (aiProcess_Triangulate | aiProcess_GenSmoothNormals |  aiProcess_JoinIdenticalVertices )
 
@@ -397,62 +399,61 @@ Mesh* Game::GetMesh(std::string fileName, bool isSkeletal)
     return m;
 }
 
-// const Animation* Game::GetAnimation(std::string fileName)
-// {
-//     Animation* anim = nullptr;
-//     auto iter = mAnimations.find(fileName);
-//     if (iter != mAnimations.end())
-//     {
-//         anim = iter->second;
-//     }
-//     else
-//     {
-//         anim = new Animation();
-//         if (anim->Load(fileName))
-//         {
-//             mAnimations.emplace(fileName, anim);
-//         }
-//         else
-//         {
-//             delete anim;
-//             anim = nullptr;
-//         }
-//     }
+const Animation* Game::GetAnimation(std::string fileName)
+{
+    Animation* anim = nullptr;
+    auto iter = mAnimations.find(fileName);
+    if (iter != mAnimations.end())
+    {
+        anim = iter->second;
+    }
+    else
+    {
+        anim = new Animation();
+        if (anim->Load(fileName))
+        {
+            mAnimations.emplace(fileName, anim);
+        }
+        else
+        {
+            delete anim;
+            anim = nullptr;
+        }
+    }
 
-//     return anim;
-// }
+    return anim;
+}
 
-// const Animation* Game::GetAnimation(std::string filePath, glm::mat4 meshMat)
-// {
-//     Animation* anim = nullptr;
-//     auto iter = mAnimations.find(filePath);
-//     if (iter != mAnimations.end())
-//     {
-//         anim = iter->second;
-//     }
-//     else
-//     {
-//         anim = new Animation();
-//         if (anim->Load(filePath, meshMat))
-//         {
-//             mAnimations.emplace(filePath, anim);
-//         }
-//         else
-//         {
-//             delete anim;
-//             anim = nullptr;
-//         }
-//     }
+const Animation* Game::GetAnimation(std::string filePath, glm::mat4 meshMat)
+{
+    Animation* anim = nullptr;
+    auto iter = mAnimations.find(filePath);
+    if (iter != mAnimations.end())
+    {
+        anim = iter->second;
+    }
+    else
+    {
+        anim = new Animation();
+        if (anim->Load(filePath, meshMat))
+        {
+            mAnimations.emplace(filePath, anim);
+        }
+        else
+        {
+            delete anim;
+            anim = nullptr;
+        }
+    }
 
-//     return anim;
-// }
+    return anim;
+}
 
 void Game::AddMeshComp(MeshComponent* meshcomp)
 {
     if (meshcomp->GetIsSkeletal()) {
-        //SkinMeshComponent* skin = static_cast<SkinMeshComponent*>(meshcomp);
-        // SkinMeshComponent* sk = static_cast<SkinMeshComponent*> (meshcomp);
-        // mSkinMeshComps.push_back(sk);
+        SkinMeshComponent* sk = static_cast<SkinMeshComponent*> (meshcomp);
+        mSkinMeshComps.push_back(sk);
     }
     else {
         mMeshComps.push_back(meshcomp);
@@ -475,9 +476,9 @@ void Game::RemoveMeshComp(MeshComponent* meshcomp)
 {
     if (meshcomp->GetIsSkeletal())
     {
-        //SkinMeshComponent* sk = static_cast<SkinMeshComponent*>(meshcomp);
-        //auto iter = std::find(mSkinMeshComps.begin(), mSkinMeshComps.end(), sk);
-        //mSkinMeshComps.erase(iter);
+        SkinMeshComponent* sk = static_cast<SkinMeshComponent*>(meshcomp);
+        auto iter = std::find(mSkinMeshComps.begin(), mSkinMeshComps.end(), sk);
+        mSkinMeshComps.erase(iter);
     }
     else
     {
