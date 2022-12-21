@@ -2,6 +2,8 @@
 CMakeを使ってUnityChanを表示させるプログラム。ビルドツールはNinjaを使用して開発したが、MinGWでもビルドできる。
 開発環境は、Windows 10である。
 
+Qiitaの記事：https://qiita.com/RyosukeKusumoto/items/77aa7c8ede828ba2d256
+
 ## Prerequests
 MinGW(Ninja)のインストール。Pathを通しておくこと。
 
