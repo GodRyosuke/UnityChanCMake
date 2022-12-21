@@ -13,6 +13,7 @@ Actor::Actor(Game* game)
     , mScale(1.0f)
     , mGame(game)
     , mRecomputeWorldTransform(true)
+    , mBaseForward(glm::vec3(1.f, 0.f, 0.f))
 {
     mGame->AddActor(this);
 }
@@ -67,7 +68,7 @@ void Actor::ActorInput(const uint8_t* keyState)
 
 glm::vec3 Actor::GetForward() const
 {
-    glm::vec3 trans = mRotation * glm::vec4(1.f, 0.f, 0.f, 1.f);
+    glm::vec3 trans = mRotation * glm::vec4(mBaseForward, 1.f);
     return trans;
 }
 

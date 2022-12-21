@@ -6,6 +6,7 @@
 Animation::Animation()
     :m_pScene(nullptr)
     , mIsSetMeshMat(false)
+    , mMeshMat(glm::mat4(1.f))
 {
 
 }
@@ -25,6 +26,7 @@ bool Animation::Load(std::string filePath)
 
     int num = m_pScene->mNumAnimations;
     assert(num);
+    printf("animation: %s loaded\n", filePath.c_str());
 }
 
 bool Animation::Load(std::string filePath, glm::mat4 meshMat)

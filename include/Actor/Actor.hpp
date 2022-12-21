@@ -19,6 +19,7 @@ public:
     virtual void ActorInput(const uint8_t* keyState);
 
     const glm::vec3& GetPosition() const { return mPosition; }
+    void SetBaseForward(glm::vec3 base) { mBaseForward = base; }
     void SetPosition(const glm::vec3& pos) { mPosition = pos; mRecomputeWorldTransform = true; }
     float GetScale() const { return mScale; }
     void SetScale(float scale) { mScale = scale;  mRecomputeWorldTransform = true; }
@@ -48,7 +49,7 @@ private:
     float mScale;
     glm::mat4 mWorldTransform;
     bool mRecomputeWorldTransform;
-
+    glm::vec3 mBaseForward;
     std::vector<class Component*> mComponents;
     class Game* mGame;
 };

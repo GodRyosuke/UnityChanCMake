@@ -25,5 +25,6 @@ private:
     float mAnimPlayRate;
     float mAnimTime;
     float mAnimTicks;
+    float mDuration;
     int mAnimIdx;
 };

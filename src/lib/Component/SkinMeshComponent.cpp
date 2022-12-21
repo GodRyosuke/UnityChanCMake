@@ -26,10 +26,11 @@ void SkinMeshComponent::Update(float deltaTime)
     {
         mAnimTime += deltaTime * mAnimPlayRate;
         // Wrap around anim time if past duration
-        float duration = mAnimation->GetDuration(mAnimIdx);
+        // float duration = mAnimation->GetDuration(mAnimIdx);
         float animTicks = mAnimation->GetAnimTicks(mAnimTime, mAnimIdx);
-        mAnimTicks = fmod(animTicks, duration - 1);
+        mAnimTicks = fmod(animTicks, mDuration - 1);
         mAnimTicks++;
+
         //while (animTicks > duration)
         //{
         //    animTicks -= duration;
@@ -54,15 +55,17 @@ float SkinMeshComponent::PlayAnimation(const Animation* anim, int animIdx, float
         mMatrixPallete[i] = glm::mat4(1.f);
     }
     ComputeMatrixPalette();
-
-    return mAnimation->GetDuration(animIdx);
+    mDuration = mAnimation->GetDuration(animIdx);
+    return mDuration;
 }
 
 void SkinMeshComponent::ComputeMatrixPalette()
 {
     //const std::vector<Matrix4>& globalInvBindPoses = mSkeleton->GetGlobalInvBindPoses();
     //std::vector<Matrix4> currentPoses;
-
+    if ((mAnimTicks < 1.f) || (mDuration < mAnimTicks)) {
+        mAnimTicks = 1.f;
+    }
     mAnimation->GetGlobalPoseAtTime(mMatrixPallete, mMesh->GetSkeleton(), mAnimTicks, mAnimIdx);
     //for (int i = 0; i < mMatrixPallete.size(); i++) {
     //    mMatrixPallete[i] = glm::mat4(1.f);

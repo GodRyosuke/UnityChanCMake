@@ -12,6 +12,7 @@
 #include "glm/gtx/rotate_vector.hpp"
 #include "glm/gtx/vector_angle.hpp"
 #include "Actor/Plane.hpp"
+#include "Actor/UnityChan.hpp"
 #include "glad/glad.h"
 #include "Shader.hpp"
 #include "Mesh.hpp"
@@ -168,16 +169,16 @@ bool Game::LoadData()
     //     mShaders.emplace("TestMeshShader", shader);
     // }
 
-    // {
-    //     // Shadow Lighting
-    //     std::string vert_file = "./Shaders/testSkin.vert";
-    //     std::string frag_file = "./Shaders/test.frag";
-    //     shader = new Shader();
-    //     if (!shader->CreateShaderProgram(vert_file, frag_file)) {
-    //         return false;
-    //     }
-    //     mShaders.emplace("TestSkinShader", shader);
-    // }
+    {
+        // Shadow Lighting
+        std::string vert_file = "./Shaders/testSkin.vert";
+        std::string frag_file = "./Shaders/test.frag";
+        shader = new Shader();
+        if (!shader->CreateShaderProgram(vert_file, frag_file)) {
+            return false;
+        }
+        mShaders.emplace("TestSkinShader", shader);
+    }
 
 
 
@@ -197,7 +198,7 @@ bool Game::LoadData()
 	// Load Models
     Actor* a = nullptr;
     // UnityChan Loader改良版
-    // a = new ActorUnityChan(this);
+    a = new UnityChan(this);
 
     for (int i = 0; i < 10; i++) {
         for (int j = 0; j < 10; j++) {
@@ -335,7 +336,7 @@ void Game::UpdateGame()
 	// Shaders.push_back(mShaders["SkinShadowLighting"]);
 	// Shaders.push_back(mShaders["UnityChanShader"]);
     Shaders.push_back(mShaders["TestMeshShader"]);
-    // Shaders.push_back(mShaders["TestSkinShader"]);
+    Shaders.push_back(mShaders["TestSkinShader"]);
 	for (auto shader : Shaders) {
 		shader->UseProgram();
 		shader->SetVectorUniform("gEyeWorldPos", mCameraPos);
@@ -348,12 +349,16 @@ void Game::Draw()
 {
     glClearColor(0, 0.5, 0.7, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	//glEnable(GL_DEPTH_TEST);
+	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    for (auto sk : mSkinMeshComps) {
+        sk->Draw(mShaders["TestSkinShader"]);
+    }
     for (auto mc : mMeshComps) {
         mc->Draw(mShaders["TestMeshShader"]);
     }
+
 
 	SDL_GL_SwapWindow(mWindow);
 }
