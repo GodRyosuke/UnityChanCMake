@@ -1,5 +1,10 @@
-class FBXLader {
+#pragma once
+
+#include <string>
+
+class FBXLoader {
 public:
-    FBXLader();
+    FBXLoader();
+    bool Load(std::string filePath);
     
 };

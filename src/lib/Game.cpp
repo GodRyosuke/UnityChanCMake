@@ -13,6 +13,7 @@
 #include "glm/gtx/vector_angle.hpp"
 #include "Actor/Plane.hpp"
 #include "Actor/UnityChan.hpp"
+#include "Actor/TestFBXActor.hpp"
 #include "glad/glad.h"
 #include "Shader.hpp"
 #include "Mesh.hpp"
@@ -111,64 +112,6 @@ bool Game::LoadData()
 		mShaders.emplace("TestMeshShader", shader);
 	}
 
-	// {
-	// 	// Shadow Lighting
-	// 	std::string vert_file = "./Shaders/ShadowLighting.vert";
-	// 	std::string frag_file = "./Shaders/ShadowLighting.frag";
-	// 	shader = new Shader();
-	// 	if (!shader->CreateShaderProgram(vert_file, frag_file)) {
-	// 		return false;
-	// 	}
-	// 	mShaders.emplace("ShadowLighting", shader);
-	// }
-
-	// // SkinMesh
-	// {
-	// 	// Shadow Map
-	// 	std::string vert_file = "./Shaders/SkinningShadowMap.vert";
-	// 	std::string frag_file = "./Shaders/ShadowMap.frag";
-	// 	shader = new Shader();
-	// 	if (!shader->CreateShaderProgram(vert_file, frag_file)) {
-	// 		return false;
-	// 	}
-	// 	mShaders.emplace("SkinShadowMap", shader);
-	// }
-
-	// {
-	// 	// Shadow Lighting
-	// 	std::string vert_file = "./Shaders/SkinningShadowLighting.vert";
-	// 	std::string frag_file = "./Shaders/ShadowLighting.frag";
-	// 	shader = new Shader();
-	// 	if (!shader->CreateShaderProgram(vert_file, frag_file)) {
-	// 		return false;
-	// 	}
-	// 	mShaders.emplace("SkinShadowLighting", shader);
-	// }
-
-	// // Unity Chan Shadow Lighting 
-	// {
-	// 	// Shadow Lighting
-	// 	std::string vert_file = "./Shaders/SkinningShadowLighting.vert";
-	// 	std::string frag_file = "./Shaders/UnityChan.frag";
-	// 	shader = new Shader();
-	// 	if (!shader->CreateShaderProgram(vert_file, frag_file)) {
-	// 		return false;
-	// 	}
-	// 	mShaders.emplace("UnityChanShader", shader);
-	// }
-
-	// // Load TestShader
-    // {
-    //     // Shadow Lighting
-    //     std::string vert_file = "./Shaders/testMesh.vert";
-    //     std::string frag_file = "./Shaders/test.frag";
-    //     shader = new Shader();
-    //     if (!shader->CreateShaderProgram(vert_file, frag_file)) {
-    //         return false;
-    //     }
-    //     mShaders.emplace("TestMeshShader", shader);
-    // }
-
     {
         // Shadow Lighting
         std::string vert_file = "./Shaders/testSkin.vert";
@@ -197,6 +140,7 @@ bool Game::LoadData()
 
 	// Load Models
     Actor* a = nullptr;
+	a = new TestFBXActor(this);
     // UnityChan Loader改良版
     a = new UnityChan(this);
 
