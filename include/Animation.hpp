@@ -12,6 +12,7 @@ class Animation
 {
 public:
     Animation();
+    Animation(const aiScene* scene);
     bool Load(std::string filePath);
     // Boneを割り当てられていないMeshでtransformを指定する場合
     bool Load(std::string filePath, glm::mat4 meshMat);

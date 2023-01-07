@@ -61,9 +61,12 @@ set (GAME_SRC
     Actor/Actor.cpp
     Actor/Plane.cpp
     Actor/UnityChan.cpp
+    Actor/TestFBXActor.cpp
+    Actor/TreasureChest.cpp
     Component/Component.cpp
     Component/MeshComponent.cpp
     Component/SkinMeshComponent.cpp
+    FBXLoader.cpp
     Mesh.cpp
     VertexArray.cpp 
     Skeleton.cpp 
