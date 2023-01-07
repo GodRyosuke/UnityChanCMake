@@ -42,7 +42,8 @@ public:
     void GetMeshEntry(const int subMeshIdx, unsigned int& numIndices,
         unsigned int& baseVertex, unsigned int& baseIndex, Material& mat) const;
     const class Skeleton* GetSkeleton () const{ return mSkeleton; }
-
+    const aiScene* GetaiScene() const { return m_pScene; }
+    
 protected:
     struct BasicMeshEntry {
         BasicMeshEntry()

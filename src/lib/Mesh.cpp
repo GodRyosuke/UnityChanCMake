@@ -89,13 +89,38 @@ bool Mesh::Load(std::string filePath, bool isSkeletal)
 
     // MaterialとTexture読み込み
     printf("Num materials: %d\n", m_pScene->mNumMaterials);
-
+    // Material.jsonの読み込み
+    
+    
     // Materialの読み込み
     for (int materialIdx = 0; materialIdx < m_pScene->mNumMaterials; materialIdx++) {
         const aiMaterial* pMaterial = m_pScene->mMaterials[materialIdx];
 
         // Diffuse Textureを読み込む
         m_Materials[materialIdx].DiffuseTexture = NULL;
+
+        std::vector<aiTextureType> texTypes = {
+            aiTextureType_NORMALS
+            ,aiTextureType_AMBIENT
+            ,aiTextureType_SPECULAR
+            ,aiTextureType_REFLECTION 
+            ,aiTextureType_EMISSIVE 
+            ,aiTextureType_HEIGHT
+            ,aiTextureType_SHININESS
+            ,aiTextureType_OPACITY 
+            ,aiTextureType_DISPLACEMENT
+            ,aiTextureType_LIGHTMAP
+            ,aiTextureType_UNKNOWN 
+        };
+        for (auto texType : texTypes) {
+            int texCount = pMaterial->GetTextureCount(texType);
+            if (texCount) {
+                aiString path;
+                pMaterial->GetTexture(texType, 0, &path, NULL, NULL, NULL, NULL, NULL);
+                std::string texPath = path.data;
+                int x = 0;
+            }
+        }
 
         if (pMaterial->GetTextureCount(aiTextureType_DIFFUSE) > 0) {
             aiString Path;

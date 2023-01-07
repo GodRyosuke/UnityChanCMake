@@ -14,6 +14,7 @@
 #include "Actor/Plane.hpp"
 #include "Actor/UnityChan.hpp"
 #include "Actor/TestFBXActor.hpp"
+#include "Actor/TreasureChest.hpp"
 #include "glad/glad.h"
 #include "Shader.hpp"
 #include "Mesh.hpp"
@@ -140,7 +141,8 @@ bool Game::LoadData()
 
 	// Load Models
     Actor* a = nullptr;
-	a = new TestFBXActor(this);
+	a = new TreasureChest(this);
+	// a = new TestFBXActor(this);
     // UnityChan Loader改良版
     a = new UnityChan(this);
 
@@ -351,6 +353,7 @@ Mesh* Game::GetMesh(std::string fileName, bool isSkeletal)
 const Animation* Game::GetAnimation(std::string fileName)
 {
     Animation* anim = nullptr;
+
     auto iter = mAnimations.find(fileName);
     if (iter != mAnimations.end())
     {
@@ -358,6 +361,12 @@ const Animation* Game::GetAnimation(std::string fileName)
     }
     else
     {
+		auto mIter = mMeshes.find(fileName);
+		if (mIter != mMeshes.end()) {	// Mesh fileをAnimationとして併用
+			anim = new Animation(mIter->second->GetaiScene());
+			return anim;
+		} 
+		
         anim = new Animation();
         if (anim->Load(fileName))
         {

@@ -62,6 +62,7 @@ set (GAME_SRC
     Actor/Plane.cpp
     Actor/UnityChan.cpp
     Actor/TestFBXActor.cpp
+    Actor/TreasureChest.cpp
     Component/Component.cpp
     Component/MeshComponent.cpp
     Component/SkinMeshComponent.cpp
