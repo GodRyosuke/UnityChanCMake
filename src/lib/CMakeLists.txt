@@ -8,6 +8,7 @@ set (UC_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/include)
 set (GLAD_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/dependencies/glad)
 # set (GLAD_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/dependencies/glad2)
 set (STBI_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/dependencies/STB_Image)
+set (JSON_INCLUDE_DIR ${PROJECT_SOURCE_DIR}/dependencies/nlohmann)
 
 set (assimp_DIR "${PROJECT_SOURCE_DIR}/dependencies/assimp/lib/cmake/assimp-5.2")
 set (glm_DIR "${PROJECT_SOURCE_DIR}/dependencies/glm/cmake/glm")
@@ -85,6 +86,7 @@ target_include_directories(Game PUBLIC
     ${ASSIMP_INCLUDE_DIRS}
     ${GLM_INCLUDE_DIRS}    
     ${STBI_INCLUDE_DIR}
+    ${JSON_INCLUDE_DIR}
 )
 target_link_libraries(Game 
     # glad 

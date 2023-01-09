@@ -48,7 +48,7 @@ bool Skeleton::Load(const aiMesh* mesh, unsigned int meshIdx, unsigned int baseV
         else {
             BoneIndex = mBoneNameToIndexMap[BoneName];
         }
-        printf("Bone Name: %s\n", BoneName.c_str());
+        // printf("Bone Name: %s\n", BoneName.c_str());
 
         if (BoneIndex == mOffsetMatrices.size()) {
             aiMatrix4x4 offsetMatrix = paiBone->mOffsetMatrix;
@@ -73,10 +73,10 @@ void Skeleton::PopulateBuffer(unsigned int& vertexBuffer) const
 {
     glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
     glBufferData(GL_ARRAY_BUFFER, sizeof(mBones[0]) * mBones.size(), &mBones[0], GL_STATIC_DRAW);
-    glEnableVertexAttribArray(3);
-    glVertexAttribIPointer(3, MAX_NUM_BONES_PER_VERTEX, GL_INT, sizeof(VertexBoneData), (const GLvoid*)0);
     glEnableVertexAttribArray(4);
-    glVertexAttribPointer(4, MAX_NUM_BONES_PER_VERTEX, GL_FLOAT, GL_FALSE, sizeof(VertexBoneData),
+    glVertexAttribIPointer(4, MAX_NUM_BONES_PER_VERTEX, GL_INT, sizeof(VertexBoneData), (const GLvoid*)0);
+    glEnableVertexAttribArray(5);
+    glVertexAttribPointer(5, MAX_NUM_BONES_PER_VERTEX, GL_FLOAT, GL_FALSE, sizeof(VertexBoneData),
         (const GLvoid*)(MAX_NUM_BONES_PER_VERTEX * sizeof(int32_t)));   // 後半4ByteがWeight
 
 }

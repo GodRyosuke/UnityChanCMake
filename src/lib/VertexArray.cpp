@@ -3,24 +3,25 @@
 #include "Skeleton.hpp"
 
 VertexArray::VertexArray(std::vector<glm::vec3>positions, std::vector<glm::vec3> normals, std::vector<glm::vec2> texcoords,
-    std::vector<unsigned int> indices, Layout layout, const Skeleton* skeleton)
+    std::vector<glm::vec3>tangents, std::vector<unsigned int> indices, Layout layout, const Skeleton* skeleton)
 {
     glGenVertexArrays(1, &mVertexArray);
     glBindVertexArray(mVertexArray);
 
     // Vertex Bufferの作成
     enum BUFFER_TYPE {
-        INDEX_BUFFER = 0,
-        POS_VB = 1,
-        TEXCOORD_VB = 2,
-        NORMAL_VB = 3,
-        BONE_VB = 4,
-        NUM_BUFFER_TYPE = 5,  // required only for instancing
+        INDEX_BUFFER,
+        POS_VB,
+        TEXCOORD_VB,
+        NORMAL_VB,
+        TANGETNT_VB,
+        BONE_VB,
+        NUM_BUFFER_TYPE  // required only for instancing
     };
 
-    int numBuffers = 4;
+    int numBuffers = 5;
     if (layout == PosNormTexSkin) {
-        numBuffers = 5;
+        numBuffers = 6;
     }
 
     mVertexBuffers = new unsigned int[numBuffers];
@@ -44,6 +45,12 @@ VertexArray::VertexArray(std::vector<glm::vec3>positions, std::vector<glm::vec3>
     glBufferData(GL_ARRAY_BUFFER, sizeof(texcoords[0]) * texcoords.size(), &texcoords[0], GL_STATIC_DRAW);
     glEnableVertexAttribArray(2);
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, 0);
+
+    // tangents
+    glBindBuffer(GL_ARRAY_BUFFER, mVertexBuffers[TANGETNT_VB]);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(tangents[0]) * tangents.size(), &tangents[0], GL_STATIC_DRAW);
+    glEnableVertexAttribArray(3);
+    glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
     if (layout == PosNormTexSkin) {
         // Born and Weights

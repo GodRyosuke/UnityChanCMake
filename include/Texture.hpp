@@ -10,7 +10,7 @@ class Texture {
 public:
 	Texture();
 	// Simple Load Texture
-	Texture(std::string filePath);
+	Texture(std::string filePath, GLenum textureUnit = GL_TEXTURE0);
 	// For Cube Maps
 	Texture(std::vector<std::string> filePaths);
 

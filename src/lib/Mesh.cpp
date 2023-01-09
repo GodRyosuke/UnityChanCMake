@@ -1,10 +1,27 @@
 #include "Mesh.hpp"
 #include "Texture.hpp"
 #include <iostream>
+#include <fstream>
 #include "GLUtil.hpp"
 #include "VertexArray.hpp"
 #include "Shader.hpp"
 #include "Skeleton.hpp"
+#include "json.hpp"
+
+namespace nl = nlohmann;
+
+
+namespace {
+std::string FindJsonMember(nl::json data, std::string member)
+{
+    auto iter = data.find(member);
+    if (iter == data.end()) {
+        return "";
+    }
+    return *iter;
+}
+
+};
 
 Mesh::Mesh()
 {
@@ -90,58 +107,73 @@ bool Mesh::Load(std::string filePath, bool isSkeletal)
     // MaterialとTexture読み込み
     printf("Num materials: %d\n", m_pScene->mNumMaterials);
     // Material.jsonの読み込み
-    
+    nl::json materialJsonMap;
+    {
+        std::string jsonFilePath = objFilePath + "Material.json";
+        std::ifstream ifs(jsonFilePath.c_str());
+        if (ifs.good())
+        {
+            ifs >> materialJsonMap;
+        }
+        else {
+            printf("error: failed to load material.josn\n");
+        }
+        ifs.close();
+    }
     
     // Materialの読み込み
     for (int materialIdx = 0; materialIdx < m_pScene->mNumMaterials; materialIdx++) {
         const aiMaterial* pMaterial = m_pScene->mMaterials[materialIdx];
 
+        std::string materialName = pMaterial->GetName().data;
         // Diffuse Textureを読み込む
         m_Materials[materialIdx].DiffuseTexture = NULL;
 
-        std::vector<aiTextureType> texTypes = {
-            aiTextureType_NORMALS
-            ,aiTextureType_AMBIENT
-            ,aiTextureType_SPECULAR
-            ,aiTextureType_REFLECTION 
-            ,aiTextureType_EMISSIVE 
-            ,aiTextureType_HEIGHT
-            ,aiTextureType_SHININESS
-            ,aiTextureType_OPACITY 
-            ,aiTextureType_DISPLACEMENT
-            ,aiTextureType_LIGHTMAP
-            ,aiTextureType_UNKNOWN 
-        };
-        for (auto texType : texTypes) {
-            int texCount = pMaterial->GetTextureCount(texType);
-            if (texCount) {
-                aiString path;
-                pMaterial->GetTexture(texType, 0, &path, NULL, NULL, NULL, NULL, NULL);
-                std::string texPath = path.data;
-                int x = 0;
-            }
-        }
-
-        if (pMaterial->GetTextureCount(aiTextureType_DIFFUSE) > 0) {
+        std::string diffuseTextureFilePath = "";
+        std::string normalTextureFilePath = "";
+        std::string aoTextureFilePath = "";
+        if (materialJsonMap.size()) {
+            // std::string diffuseTexName = materialJsonMap[materialName]["Diffuse"];
+            diffuseTextureFilePath = FindJsonMember(materialJsonMap[materialName], "Diffuse");
+            normalTextureFilePath = FindJsonMember(materialJsonMap[materialName], "Normal");
+            aoTextureFilePath = FindJsonMember(materialJsonMap[materialName], "AO");
+            // auto iter = materialJsonMap[materialName].find("Normal");
+            // if (iter != materialJsonMap[materialName].end()) {
+            //     normalTextureFilePath = *iter;
+            // }
+        } else if (pMaterial->GetTextureCount(aiTextureType_DIFFUSE) > 0) {
             aiString Path;
 
             if (pMaterial->GetTexture(aiTextureType_DIFFUSE, 0, &Path, NULL, NULL, NULL, NULL, NULL) == AI_SUCCESS) {
-                std::string texturePathData = Path.data;
-
-                // 読み込んだTextureのPathの分解処理
-                char buffer[512];
-                memset(buffer, 0, 512 * sizeof(char));
-                memcpy(buffer, texturePathData.c_str(), sizeof(char) * 512);
-                GLUtil::Replace('\\', '/', buffer);
-                std::vector<std::string> split_list;
-                std::string replace_file_name = buffer;
-                // 「/」で分解
-                GLUtil::Split('/', buffer, split_list);
-
-                std::string texturePath = objFilePath + "Textures/" + split_list[split_list.size() - 1];
-                m_Materials[materialIdx].DiffuseTexture = new Texture(texturePath);
+                diffuseTextureFilePath = Path.data;
             }
         }
+
+        if (diffuseTextureFilePath.length()) {
+            // 読み込んだTextureのPathの分解処理
+            char buffer[512];
+            memset(buffer, 0, 512 * sizeof(char));
+            memcpy(buffer, diffuseTextureFilePath.c_str(), sizeof(char) * 512);
+            GLUtil::Replace('\\', '/', buffer);
+            std::vector<std::string> split_list;
+            std::string replace_file_name = buffer;
+            // 「/」で分解
+            GLUtil::Split('/', buffer, split_list);
+
+            std::string texturePath = objFilePath + "Textures/" + split_list[split_list.size() - 1];
+            m_Materials[materialIdx].DiffuseTexture = new Texture(texturePath);
+
+            if (normalTextureFilePath.length()) {
+                texturePath = objFilePath + "Textures/" + normalTextureFilePath;
+                m_Materials[materialIdx].NormalTexture = new Texture(texturePath);
+            }
+            if (aoTextureFilePath.length()) {
+                texturePath = objFilePath + "Textures/" + aoTextureFilePath;
+                m_Materials[materialIdx].AOTexture = new Texture(texturePath);
+            }
+        }
+
+
 
         // Diffuse Specular Ambientの読み込み
         aiColor3D AmbientColor(0.0f, 0.0f, 0.0f);
@@ -188,10 +220,10 @@ bool Mesh::Load(std::string filePath, bool isSkeletal)
 
     // Vertex Array Object作成
     if (!isSkeletal) {
-        mVAO = new VertexArray(m_Positions, m_Normals, m_TexCoords, m_Indices, VertexArray::PosNormTex);
+        mVAO = new VertexArray(m_Positions, m_Normals, m_TexCoords, m_Tangents, m_Indices, VertexArray::PosNormTex);
     }
     else {
-        mVAO = new VertexArray(m_Positions, m_Normals, m_TexCoords, m_Indices, VertexArray::PosNormTexSkin, mSkeleton);
+        mVAO = new VertexArray(m_Positions, m_Normals, m_TexCoords, m_Tangents, m_Indices, VertexArray::PosNormTexSkin, mSkeleton);
     }
 
     m_Positions.clear();
@@ -266,6 +298,51 @@ void Mesh::LoadMesh(const aiMesh* pMesh, unsigned int meshIdx)
         m_Indices.push_back(Face.mIndices[0]);
         m_Indices.push_back(Face.mIndices[1]);
         m_Indices.push_back(Face.mIndices[2]);
+    }
+
+    // Tangent 情報取得
+    m_Tangents.resize(m_Positions.size());
+    for (int i = 0; i < m_Positions.size(); i++) {
+        m_Tangents[i] = glm::vec3(0.f); // 初期化
+    }
+    for (int i = 0; i < m_Indices.size(); i+= 3) {
+        glm::vec3 v0 = m_Positions[m_Indices[i]];
+        glm::vec3 v1 = m_Positions[m_Indices[i+1]];
+        glm::vec3 v2 = m_Positions[m_Indices[i+2]];
+        glm::vec3& tan0 = m_Tangents[m_Indices[i]];
+        glm::vec3& tan1 = m_Tangents[m_Indices[i + 1]];
+        glm::vec3& tan2 = m_Tangents[m_Indices[i + 2]];
+        glm::vec2 uv0 = m_TexCoords[m_Indices[i]];
+        glm::vec2 uv1 = m_TexCoords[m_Indices[i + 1]];
+        glm::vec2 uv2 = m_TexCoords[m_Indices[i + 2]];
+
+        glm::vec3 Edge1 = v1 - v0;
+        glm::vec3 Edge2 = v2 - v0;
+
+        float DeltaU1 = uv1.x - uv0.x;
+        float DeltaV1 = uv1.y - uv0.y;
+        float DeltaU2 = uv2.x - uv0.x;
+        float DeltaV2 = uv2.y - uv0.y;
+
+        float f = 1.0f / (DeltaU1 * DeltaV2 - DeltaU2 * DeltaV1);
+
+        glm::vec3 Tangent, Bitangent;
+
+        Tangent.x = f * (DeltaV2 * Edge1.x - DeltaV1 * Edge2.x);
+        Tangent.y = f * (DeltaV2 * Edge1.y - DeltaV1 * Edge2.y);
+        Tangent.z = f * (DeltaV2 * Edge1.z - DeltaV1 * Edge2.z);
+
+        Bitangent.x = f * (-DeltaU2 * Edge1.x + DeltaU1 * Edge2.x);
+        Bitangent.y = f * (-DeltaU2 * Edge1.y + DeltaU1 * Edge2.y);
+        Bitangent.z = f * (-DeltaU2 * Edge1.z + DeltaU1 * Edge2.z);
+
+        tan0 += Tangent;
+        tan1 += Tangent;
+        tan2 += Tangent;
+    }
+
+    for (int i = 0; i < m_Tangents.size(); i++) {
+        m_Tangents[i] = glm::normalize(m_Tangents[i]);
     }
 }
 

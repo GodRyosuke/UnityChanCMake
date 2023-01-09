@@ -7,7 +7,7 @@ Texture::Texture()
 
 }
 
-Texture::Texture(std::string filePath)
+Texture::Texture(std::string filePath, GLenum textureUnit)
 {
 	// Load from file
 	int numColCh;
@@ -16,7 +16,7 @@ Texture::Texture(std::string filePath)
 
 	
 	glGenTextures(1, &texture_data);
-	//glActiveTexture(GL_TEXTURE0);
+	glActiveTexture(textureUnit);
 	glBindTexture(GL_TEXTURE_2D, texture_data);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -27,6 +27,8 @@ Texture::Texture(std::string filePath)
 	auto colorCh = GL_RGBA;
 	if (numColCh == 3) {
 		colorCh = GL_RGB;
+	} else if (numColCh == 1) {
+		colorCh = GL_RED;
 	}
 	//auto colorCh = GL_BGRA;
 	//if (numColCh == 3) {

@@ -124,6 +124,30 @@ bool Game::LoadData()
         mShaders.emplace("TestSkinShader", shader);
     }
 
+	{
+		// plane shader
+        std::string vert_file = "./Shaders/testMesh.vert";
+        std::string frag_file = "./Shaders/plane.frag";
+        shader = new Shader();
+        if (!shader->CreateShaderProgram(vert_file, frag_file)) {
+            return false;
+        }
+        mShaders.emplace("PlaneShader", shader);
+    }
+
+	{
+		// chest shader
+        std::string vert_file = "./Shaders/testSkin.vert";
+        std::string frag_file = "./Shaders/chest.frag";
+        shader = new Shader();
+        if (!shader->CreateShaderProgram(vert_file, frag_file)) {
+            return false;
+        }
+        mShaders.emplace("ChestShader", shader);
+    }
+
+	
+
 
 
 	// View Projection Matrixを設定
@@ -141,11 +165,6 @@ bool Game::LoadData()
 
 	// Load Models
     Actor* a = nullptr;
-	a = new TreasureChest(this);
-	// a = new TestFBXActor(this);
-    // UnityChan Loader改良版
-    a = new UnityChan(this);
-
     for (int i = 0; i < 10; i++) {
         for (int j = 0; j < 10; j++) {
             float x_pos = i * 2 + 1.f;
@@ -154,6 +173,11 @@ bool Game::LoadData()
             a->SetPosition(glm::vec3(x_pos, y_pos, 0.f) - glm::vec3(10.f, 10.f, 0.f));
         }
     }
+	a = new TreasureChest(this);
+    // a = new UnityChan(this);
+	// a = new TestFBXActor(this);
+    // UnityChan Loader改良版
+
 
 	// Load ShadowMap FBO
 	// mTextureShadowMapFBO = new TextureShadowMap();
@@ -277,16 +301,16 @@ void Game::UpdateGame()
 		}
 	}
 
-	std::vector<Shader*> Shaders;
-	// Shaders.push_back(mShaders["ShadowLighting"]);
-	// Shaders.push_back(mShaders["SkinShadowLighting"]);
-	// Shaders.push_back(mShaders["UnityChanShader"]);
-    Shaders.push_back(mShaders["TestMeshShader"]);
-    Shaders.push_back(mShaders["TestSkinShader"]);
-	for (auto shader : Shaders) {
-		shader->UseProgram();
-		shader->SetVectorUniform("gEyeWorldPos", mCameraPos);
-		shader->SetMatrixUniform("CameraView", glm::lookAt(mCameraPos, mCameraPos + mCameraOrientation, mCameraUP));
+	// std::vector<Shader*> Shaders;
+	// // Shaders.push_back(mShaders["ShadowLighting"]);
+	// // Shaders.push_back(mShaders["SkinShadowLighting"]);
+	// // Shaders.push_back(mShaders["UnityChanShader"]);
+    // Shaders.push_back(mShaders["TestMeshShader"]);
+    // Shaders.push_back(mShaders["TestSkinShader"]);
+	for (auto shader : mShaders) {
+		shader.second->UseProgram();
+		shader.second->SetVectorUniform("gEyeWorldPos", mCameraPos);
+		shader.second->SetMatrixUniform("CameraView", glm::lookAt(mCameraPos, mCameraPos + mCameraOrientation, mCameraUP));
 	}
 
 }
@@ -299,10 +323,10 @@ void Game::Draw()
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     for (auto sk : mSkinMeshComps) {
-        sk->Draw(mShaders["TestSkinShader"]);
+        sk->Draw();
     }
     for (auto mc : mMeshComps) {
-        mc->Draw(mShaders["TestMeshShader"]);
+        mc->Draw();
     }
 
 
@@ -325,6 +349,23 @@ void Game::Shutdown()
 
 }
 
+
+Shader* Game::GetShader(std::string shaderName)
+{
+    Shader* shader = nullptr;
+    auto iter = mShaders.find(shaderName);
+    if (iter != mShaders.end())
+    {
+        shader = iter->second;
+    } else if (shaderName.length() == 0) {
+		shader = mShaders["TestMeshShader"];
+	}
+    else
+    {
+		printf("error: This shader has not been loaded yet\n");
+    }
+    return shader;
+}
 
 Mesh* Game::GetMesh(std::string fileName, bool isSkeletal)
 {
