@@ -169,7 +169,7 @@ bool Mesh::Load(std::string filePath, bool isSkeletal)
             }
             if (aoTextureFilePath.length()) {
                 texturePath = objFilePath + "Textures/" + aoTextureFilePath;
-                m_Materials[materialIdx].AOTexture = new Texture(texturePath);
+                m_Materials[materialIdx].AOTexture = new Texture(texturePath, GL_TEXTURE2, GL_RED);
             }
         }
 

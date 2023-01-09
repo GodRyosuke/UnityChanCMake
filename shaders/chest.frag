@@ -39,8 +39,7 @@ vec3 CalcBumpedNormal()
 
 void main()
 {
-	vec3 aoVec = texture(gAOMap, TexCoord0.xy).xyz;
-	float AmbientOcclusion = length(aoVec);
+	float AmbientOcclusion = texture(gAOMap, TexCoord0.xy).r;
 	vec3 Direction = vec3(1.0f, 0.0f, -1.0f);
 	vec3 AmbientLight = vec3(0.2, 0.2, 0.2);
 	vec3 DiffuseColor = vec3(0.5, 0.5, 0.5) * 2.f;
