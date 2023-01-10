@@ -1,0 +1,7 @@
+{
+    "PlaneMat":{
+        "Diffuse":"Bricks077_4K_Color.jpg",
+        "Normal":"Bricks077_4K_NormalGL.jpg",
+        "AO":"Bricks077_4K_AmbientOcclusion.jpg"
+    }
+}

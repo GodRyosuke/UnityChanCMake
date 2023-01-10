@@ -11,6 +11,14 @@ Animation::Animation()
 
 }
 
+Animation::Animation(const aiScene* scene)
+    :m_pScene(scene)
+    , mIsSetMeshMat(false)
+    , mMeshMat(glm::mat4(1.f))
+{
+
+}
+
 bool Animation::Load(std::string filePath)
 {
     m_pScene = m_Importer.ReadFile(filePath.c_str(), ASSIMP_LOAD_FLAGS);
@@ -300,7 +308,6 @@ void Animation::GetGlobalPoseAtTime(std::vector<glm::mat4>& outPoses, const Skel
     aiAnimation* anim = m_pScene->mAnimations[animIdx];
     ReadNodeHierarchy(anim, inSkeleton, inTime, m_pScene->mRootNode, Identity, outPoses);
     //ShowNodeNames(m_pScene->mRootNode, 0);
-    int x = 0;
     //Transforms.resize(numBones);
 
     //for (unsigned int i = 0; i < numBones; i++) {

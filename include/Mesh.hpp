@@ -25,6 +25,8 @@ public:
         glm::vec3 Bump;
         glm::vec3 NormalMap;
         class Texture* DiffuseTexture;
+        class Texture* NormalTexture;
+        class Texture* AOTexture;
     };
 
     Mesh();
@@ -42,7 +44,8 @@ public:
     void GetMeshEntry(const int subMeshIdx, unsigned int& numIndices,
         unsigned int& baseVertex, unsigned int& baseIndex, Material& mat) const;
     const class Skeleton* GetSkeleton () const{ return mSkeleton; }
-
+    const aiScene* GetaiScene() const { return m_pScene; }
+    
 protected:
     struct BasicMeshEntry {
         BasicMeshEntry()
@@ -80,6 +83,7 @@ private:
     std::vector<Material> m_Materials;
     std::vector<glm::vec3> m_Positions;
     std::vector<glm::vec3> m_Normals;
+    std::vector<glm::vec3> m_Tangents;
     std::vector<glm::vec2> m_TexCoords;
     std::vector<unsigned int> m_Indices;
 

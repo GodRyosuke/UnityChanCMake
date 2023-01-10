@@ -13,6 +13,8 @@
 #include "glm/gtx/vector_angle.hpp"
 #include "Actor/Plane.hpp"
 #include "Actor/UnityChan.hpp"
+#include "Actor/TestFBXActor.hpp"
+#include "Actor/TreasureChest.hpp"
 #include "glad/glad.h"
 #include "Shader.hpp"
 #include "Mesh.hpp"
@@ -111,64 +113,6 @@ bool Game::LoadData()
 		mShaders.emplace("TestMeshShader", shader);
 	}
 
-	// {
-	// 	// Shadow Lighting
-	// 	std::string vert_file = "./Shaders/ShadowLighting.vert";
-	// 	std::string frag_file = "./Shaders/ShadowLighting.frag";
-	// 	shader = new Shader();
-	// 	if (!shader->CreateShaderProgram(vert_file, frag_file)) {
-	// 		return false;
-	// 	}
-	// 	mShaders.emplace("ShadowLighting", shader);
-	// }
-
-	// // SkinMesh
-	// {
-	// 	// Shadow Map
-	// 	std::string vert_file = "./Shaders/SkinningShadowMap.vert";
-	// 	std::string frag_file = "./Shaders/ShadowMap.frag";
-	// 	shader = new Shader();
-	// 	if (!shader->CreateShaderProgram(vert_file, frag_file)) {
-	// 		return false;
-	// 	}
-	// 	mShaders.emplace("SkinShadowMap", shader);
-	// }
-
-	// {
-	// 	// Shadow Lighting
-	// 	std::string vert_file = "./Shaders/SkinningShadowLighting.vert";
-	// 	std::string frag_file = "./Shaders/ShadowLighting.frag";
-	// 	shader = new Shader();
-	// 	if (!shader->CreateShaderProgram(vert_file, frag_file)) {
-	// 		return false;
-	// 	}
-	// 	mShaders.emplace("SkinShadowLighting", shader);
-	// }
-
-	// // Unity Chan Shadow Lighting 
-	// {
-	// 	// Shadow Lighting
-	// 	std::string vert_file = "./Shaders/SkinningShadowLighting.vert";
-	// 	std::string frag_file = "./Shaders/UnityChan.frag";
-	// 	shader = new Shader();
-	// 	if (!shader->CreateShaderProgram(vert_file, frag_file)) {
-	// 		return false;
-	// 	}
-	// 	mShaders.emplace("UnityChanShader", shader);
-	// }
-
-	// // Load TestShader
-    // {
-    //     // Shadow Lighting
-    //     std::string vert_file = "./Shaders/testMesh.vert";
-    //     std::string frag_file = "./Shaders/test.frag";
-    //     shader = new Shader();
-    //     if (!shader->CreateShaderProgram(vert_file, frag_file)) {
-    //         return false;
-    //     }
-    //     mShaders.emplace("TestMeshShader", shader);
-    // }
-
     {
         // Shadow Lighting
         std::string vert_file = "./Shaders/testSkin.vert";
@@ -179,6 +123,30 @@ bool Game::LoadData()
         }
         mShaders.emplace("TestSkinShader", shader);
     }
+
+	{
+		// plane shader
+        std::string vert_file = "./Shaders/testMesh.vert";
+        std::string frag_file = "./Shaders/plane.frag";
+        shader = new Shader();
+        if (!shader->CreateShaderProgram(vert_file, frag_file)) {
+            return false;
+        }
+        mShaders.emplace("PlaneShader", shader);
+    }
+
+	{
+		// chest shader
+        std::string vert_file = "./Shaders/testSkin.vert";
+        std::string frag_file = "./Shaders/chest.frag";
+        shader = new Shader();
+        if (!shader->CreateShaderProgram(vert_file, frag_file)) {
+            return false;
+        }
+        mShaders.emplace("ChestShader", shader);
+    }
+
+	
 
 
 
@@ -197,9 +165,6 @@ bool Game::LoadData()
 
 	// Load Models
     Actor* a = nullptr;
-    // UnityChan Loader改良版
-    a = new UnityChan(this);
-
     for (int i = 0; i < 10; i++) {
         for (int j = 0; j < 10; j++) {
             float x_pos = i * 2 + 1.f;
@@ -208,6 +173,11 @@ bool Game::LoadData()
             a->SetPosition(glm::vec3(x_pos, y_pos, 0.f) - glm::vec3(10.f, 10.f, 0.f));
         }
     }
+	a = new TreasureChest(this);
+    // a = new UnityChan(this);
+	// a = new TestFBXActor(this);
+    // UnityChan Loader改良版
+
 
 	// Load ShadowMap FBO
 	// mTextureShadowMapFBO = new TextureShadowMap();
@@ -331,16 +301,16 @@ void Game::UpdateGame()
 		}
 	}
 
-	std::vector<Shader*> Shaders;
-	// Shaders.push_back(mShaders["ShadowLighting"]);
-	// Shaders.push_back(mShaders["SkinShadowLighting"]);
-	// Shaders.push_back(mShaders["UnityChanShader"]);
-    Shaders.push_back(mShaders["TestMeshShader"]);
-    Shaders.push_back(mShaders["TestSkinShader"]);
-	for (auto shader : Shaders) {
-		shader->UseProgram();
-		shader->SetVectorUniform("gEyeWorldPos", mCameraPos);
-		shader->SetMatrixUniform("CameraView", glm::lookAt(mCameraPos, mCameraPos + mCameraOrientation, mCameraUP));
+	// std::vector<Shader*> Shaders;
+	// // Shaders.push_back(mShaders["ShadowLighting"]);
+	// // Shaders.push_back(mShaders["SkinShadowLighting"]);
+	// // Shaders.push_back(mShaders["UnityChanShader"]);
+    // Shaders.push_back(mShaders["TestMeshShader"]);
+    // Shaders.push_back(mShaders["TestSkinShader"]);
+	for (auto shader : mShaders) {
+		shader.second->UseProgram();
+		shader.second->SetVectorUniform("gEyeWorldPos", mCameraPos);
+		shader.second->SetMatrixUniform("CameraView", glm::lookAt(mCameraPos, mCameraPos + mCameraOrientation, mCameraUP));
 	}
 
 }
@@ -353,10 +323,10 @@ void Game::Draw()
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     for (auto sk : mSkinMeshComps) {
-        sk->Draw(mShaders["TestSkinShader"]);
+        sk->Draw();
     }
     for (auto mc : mMeshComps) {
-        mc->Draw(mShaders["TestMeshShader"]);
+        mc->Draw();
     }
 
 
@@ -379,6 +349,23 @@ void Game::Shutdown()
 
 }
 
+
+Shader* Game::GetShader(std::string shaderName)
+{
+    Shader* shader = nullptr;
+    auto iter = mShaders.find(shaderName);
+    if (iter != mShaders.end())
+    {
+        shader = iter->second;
+    } else if (shaderName.length() == 0) {
+		shader = mShaders["TestMeshShader"];
+	}
+    else
+    {
+		printf("error: This shader has not been loaded yet\n");
+    }
+    return shader;
+}
 
 Mesh* Game::GetMesh(std::string fileName, bool isSkeletal)
 {
@@ -407,6 +394,7 @@ Mesh* Game::GetMesh(std::string fileName, bool isSkeletal)
 const Animation* Game::GetAnimation(std::string fileName)
 {
     Animation* anim = nullptr;
+
     auto iter = mAnimations.find(fileName);
     if (iter != mAnimations.end())
     {
@@ -414,6 +402,12 @@ const Animation* Game::GetAnimation(std::string fileName)
     }
     else
     {
+		auto mIter = mMeshes.find(fileName);
+		if (mIter != mMeshes.end()) {	// Mesh fileをAnimationとして併用
+			anim = new Animation(mIter->second->GetaiScene());
+			return anim;
+		} 
+		
         anim = new Animation();
         if (anim->Load(fileName))
         {

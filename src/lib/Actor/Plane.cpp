@@ -7,6 +7,8 @@ Plane::Plane(Game* game)
 {
     mMeshComp = new MeshComponent(this);
     mMeshComp->SetMesh(game->GetMesh("./assets/world/terrain.fbx"));
+    mMeshComp->SetShader(game->GetShader("PlaneShader"));
+    // mMeshComp->SetUseNormalMap(false);
 }
 
 

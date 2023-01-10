@@ -20,6 +20,7 @@ public:
 	void Shutdown();
     Uint32 GetCurrentTime() const { return mTicksCount; }
 
+	class Shader* GetShader(std::string shaderName = "");
     class Mesh* GetMesh(std::string filePath, bool isSkeletal = false);
     const class Animation* GetAnimation(std::string filePath);
     const class Animation* GetAnimation(std::string filePath, glm::mat4 meshMat);
@@ -80,7 +81,6 @@ private:
 	//Shader* mSkinShadowLightingShader;
 	//Shader* mUnityChanShader;
 
-	std::unordered_map<std::string, class Shader*> mShaders;
 
 	PHASE mPhase;
 
@@ -94,6 +94,7 @@ private:
 	glm::vec3 mMousePos;
 
     std::vector<class Actor*> mActors;
+    std::unordered_map<std::string, class Shader*> mShaders;
     std::unordered_map<std::string, class Mesh*> mMeshes;
     std::unordered_map<std::string, class Animation*> mAnimations;
     std::vector<class MeshComponent*> mMeshComps;

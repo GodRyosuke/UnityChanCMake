@@ -7,7 +7,7 @@ Texture::Texture()
 
 }
 
-Texture::Texture(std::string filePath)
+Texture::Texture(std::string filePath, GLenum textureUnit, int colorch)
 {
 	// Load from file
 	int numColCh;
@@ -16,7 +16,7 @@ Texture::Texture(std::string filePath)
 
 	
 	glGenTextures(1, &texture_data);
-	//glActiveTexture(GL_TEXTURE0);
+	glActiveTexture(textureUnit);
 	glBindTexture(GL_TEXTURE_2D, texture_data);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -25,8 +25,14 @@ Texture::Texture(std::string filePath)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
 	auto colorCh = GL_RGBA;
-	if (numColCh == 3) {
-		colorCh = GL_RGB;
+	if (colorch > 0) {
+		colorCh = colorch;
+	} else {
+		if (numColCh == 3) {
+			colorCh = GL_RGB;
+		} else if (numColCh == 1) {
+			colorCh = GL_RED;
+		}
 	}
 	//auto colorCh = GL_BGRA;
 	//if (numColCh == 3) {
@@ -34,20 +40,9 @@ Texture::Texture(std::string filePath)
 	//}
 	glTexImage2D(GL_TEXTURE_2D, 0, colorCh, width, height, 0, colorCh, GL_UNSIGNED_BYTE, PictureData);
 	// Generates MipMaps
-	//glGenerateMipmap(GL_TEXTURE_2D);
+	glGenerateMipmap(GL_TEXTURE_2D);
 	glBindTexture(texture_data, 0);		// unbind
 	stbi_image_free(PictureData);
-
-
-
-	//SDL_Surface* surf = IMG_Load(filePath.c_str());
-	//if (!surf)
-	//{
-	//	SDL_Log("Failed to load texture file %s", filePath.c_str());
-	//	return;
-	//}
-
-	//SDL_FreeSurface(surf);
 }
 
 Texture::Texture(std::vector<std::string> filePaths)

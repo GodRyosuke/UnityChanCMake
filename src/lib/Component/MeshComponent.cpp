@@ -11,6 +11,8 @@ MeshComponent::MeshComponent(Actor* owner, bool isSkeletal)
     ,mwMesh(nullptr)
     ,mMesh(nullptr)
     ,mIsSkeletal(isSkeletal)
+    ,mUseNormalMap(true)
+    ,mShader(nullptr)
 {
     mOwner->GetGame()->AddMeshComp(this);
 }
@@ -20,11 +22,15 @@ void MeshComponent::Update(float deltatime)
 
 }
 
-void MeshComponent::Draw(Shader* shader)
+void MeshComponent::Draw()
 {
-    shader->UseProgram();
+    // if (!mShader) {
+    //     mShader = mOwner->GetGame()->GetShader();
+    // }
+    assert(mShader);
+    mShader->UseProgram();
     if (mMesh) {
-        shader->SetMatrixUniform("ModelTransform", mOwner->GetWorldTransform());
+        mShader->SetMatrixUniform("ModelTransform", mOwner->GetWorldTransform());
 
         VertexArray* vao = mMesh->GetVertexArray();
         vao->SetActive();
@@ -35,21 +41,32 @@ void MeshComponent::Draw(Shader* shader)
             Mesh::Material material;
             mMesh->GetMeshEntry(subMeshIdx, numIndices, baseVertex, baseIndex, material);
 
-            SetBoneMatrices(shader);
+            SetBoneMatrices(mShader);
 
             // Material設定
-            shader->SetVectorUniform("matAmbientColor", material.AmbientColor);
-            //shader->SetVectorUniform("uDirLight.mDirection", glm::vec3(0, -0.707, -0.707));
-            shader->SetVectorUniform("matDiffuseColor", material.DiffuseColor);
-            //shader->SetVectorUniform("uDirLight.mSpecColor", m_Materials[MaterialIndex].SpecColor);
-            shader->SetFloatUniform("matSpecPower", material.SpecPower);
-            shader->SetVectorUniform("matSpecColor", material.SpecColor);
-            //shader->SetFloatUniform("gMatSpecularIntensity", 1.f);
-            //shader->SetFloatUniform("gMatSpecularIntensity", 1.0f);
+            mShader->SetVectorUniform("matAmbientColor", material.AmbientColor);
+            //mShader->SetVectorUniform("uDirLight.mDirection", glm::vec3(0, -0.707, -0.707));
+            mShader->SetVectorUniform("matDiffuseColor", material.DiffuseColor);
+            //mShader->SetVectorUniform("uDirLight.mSpecColor", m_Materials[MaterialIndex].SpecColor);
+            mShader->SetFloatUniform("matSpecPower", material.SpecPower);
+            mShader->SetVectorUniform("matSpecColor", material.SpecColor);
+            mShader->SetSamplerUniform("useNormalMap", mUseNormalMap);
+            //mShader->SetFloatUniform("gMatSpecularIntensity", 1.f);
+            //mShader->SetFloatUniform("gMatSpecularIntensity", 1.0f);
 
             if (material.DiffuseTexture) {
+                mShader->SetSamplerUniform("gDiffuseTex", 0);
                 material.DiffuseTexture->BindTexture(GL_TEXTURE0);
             }
+            if (material.NormalTexture) {
+                mShader->SetSamplerUniform("gNormalMap", 1);
+                material.NormalTexture->BindTexture(GL_TEXTURE1);
+            }
+            if (material.AOTexture) {
+                mShader->SetSamplerUniform("gAOMap", 2);
+                material.AOTexture->BindTexture(GL_TEXTURE2);
+            }
+            
 
             // Mesh描画
             glDrawElementsBaseVertex(GL_TRIANGLES,
